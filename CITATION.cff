@@ -5,8 +5,6 @@ type: software
 authors:
   - family-names: "Szeto"
     given-names: "Carol Ying Ying"
-  - family-names: "Kwan"
-    given-names: "Hoi Shan"
 version: "0.1.0-beta"
 date-released: "2026-05-20"
 license: MIT
