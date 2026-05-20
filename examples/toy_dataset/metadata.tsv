@@ -1,0 +1,17 @@
+sample_id	subject_id	timepoint	group	endpoint
+S01_B	S01	Before	Fermented	toy_before_after
+S01_A	S01	After	Fermented	toy_before_after
+S02_B	S02	Before	Fermented	toy_before_after
+S02_A	S02	After	Fermented	toy_before_after
+S03_B	S03	Before	Fermented	toy_before_after
+S03_A	S03	After	Fermented	toy_before_after
+S04_B	S04	Before	Fermented	toy_before_after
+S04_A	S04	After	Fermented	toy_before_after
+S05_B	S05	Before	Fermented	toy_before_after
+S05_A	S05	After	Fermented	toy_before_after
+S06_B	S06	Before	Fiber	toy_before_after
+S06_A	S06	After	Fiber	toy_before_after
+S07_B	S07	Before	Fiber	toy_before_after
+S07_A	S07	After	Fiber	toy_before_after
+S08_B	S08	Before	Fiber	toy_before_after
+S08_A	S08	After	Fiber	toy_before_after

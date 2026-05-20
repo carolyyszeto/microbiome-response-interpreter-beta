@@ -1,0 +1,22 @@
+name: microbiome-response-interpreter
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - r-base=4.4
+  - r-readr
+  - r-dplyr
+  - r-tidyr
+  - r-tibble
+  - r-ggplot2
+  - r-vegan
+  - r-jsonlite
+  - r-data.table
+  - r-optparse
+  - r-stringr
+  - r-purrr
+  - bioconductor-phyloseq
+  - bioconductor-dada2
+  - bioconductor-zcompositions
+  - vsearch

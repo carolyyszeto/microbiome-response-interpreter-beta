@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+title: "Microbiome Response-Geometry Interpreter Beta: A Research-Preview Companion Skill"
+message: "If you use this beta research-preview companion skill, cite the associated microbiome response-geometry preprint and archived software release when available. Related manuscript: A response-geometry framework separates microbiome movement magnitude from directional coherence in intervention studies. Preprint DOI: to be added after bioRxiv posting."
+type: software
+authors:
+  - family-names: "Szeto"
+    given-names: "Carol Ying Ying"
+  - family-names: "Kwan"
+    given-names: "Hoi Shan"
+version: "0.1.0-beta"
+date-released: "2026-05-20"
+license: MIT
+repository-code: "https://github.com/carolyyszeto/microbiome-response-interpreter-beta"
+abstract: "Beta research-preview companion skill for exploratory microbiome response-geometry analysis associated with the manuscript 'A response-geometry framework separates microbiome movement magnitude from directional coherence in intervention studies.' The preprint DOI will be added after bioRxiv posting."
+preferred-citation:
+  type: article
+  title: "A response-geometry framework separates microbiome movement magnitude from directional coherence in intervention studies"
+  authors:
+    - family-names: "Szeto"
+      given-names: "Carol Ying Ying"
+    - family-names: "Kwan"
+      given-names: "Hoi Shan"
+  year: 2026
