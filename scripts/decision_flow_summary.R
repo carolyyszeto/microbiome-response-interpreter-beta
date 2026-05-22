@@ -52,9 +52,20 @@ read_table <- function(path) {
 dat <- read_table(group_geometry_path)
 if (nrow(dat) == 0) stop("Input table has no rows")
 
-pick_col <- function(candidates, user_col = NULL) {
+format_cols <- function(cols) {
+  if (length(cols) == 0) return("(none)")
+  paste(cols, collapse = ", ")
+}
+
+pick_col <- function(candidates, user_col = NULL, label = "column") {
   if (!is.null(user_col)) {
-    if (!user_col %in% names(dat)) stop("Requested column not found: ", user_col)
+    if (!user_col %in% names(dat)) {
+      stop(
+        "Requested ", label, " column not found: ", user_col,
+        ". Available columns: ", format_cols(names(dat)),
+        call. = FALSE
+      )
+    }
     return(user_col)
   }
   hit <- candidates[candidates %in% names(dat)]
@@ -62,18 +73,59 @@ pick_col <- function(candidates, user_col = NULL) {
   hit[1]
 }
 
-group_col <- pick_col(c("group", "arm", "condition", "intervention", "contrast"), get_arg("--group_col"))
-mag_col <- pick_col(c("mean_magnitude", "magnitude_mean", "median_magnitude", "aitchison_magnitude", "magnitude"), get_arg("--magnitude_col"))
-coh_col <- pick_col(c("mean_cosine", "mean_coherence", "coherence", "directional_coherence", "loo_coherence", "mean_alignment"), get_arg("--coherence_col"))
-null_col <- pick_col(c("permutation_null_mean", "null_mean", "coherence_null_mean"), get_arg("--coherence_null_col"))
-gap_col <- pick_col(c("coherence_gap", "observed_minus_null", "mean_cosine_gap", "coherence_observed_minus_null"), get_arg("--coherence_gap_col"))
+mag_candidates <- c(
+  "mean_subject_magnitude",
+  "mean_vector_magnitude",
+  "mean_magnitude",
+  "magnitude_mean",
+  "response_magnitude",
+  "mean_response_magnitude",
+  "median_magnitude",
+  "aitchison_magnitude",
+  "magnitude"
+)
+coh_candidates <- c(
+  "mean_cosine",
+  "mean_coherence",
+  "coherence_mean",
+  "directional_coherence",
+  "mean_directional_coherence",
+  "cosine",
+  "coherence",
+  "loo_coherence",
+  "mean_alignment"
+)
+
+group_col <- pick_col(c("group", "arm", "condition", "intervention", "contrast"), get_arg("--group_col"), "group")
+mag_col <- pick_col(mag_candidates, get_arg("--magnitude_col"), "magnitude")
+coh_col <- pick_col(coh_candidates, get_arg("--coherence_col"), "coherence")
+null_col <- pick_col(c("permutation_null_mean", "null_mean", "coherence_null_mean"), get_arg("--coherence_null_col"), "coherence-null")
+gap_col <- pick_col(c("coherence_gap", "observed_minus_null", "mean_cosine_gap", "coherence_observed_minus_null"), get_arg("--coherence_gap_col"), "coherence-gap")
 
 if (is.null(group_col)) {
   group_col <- ".group"
   dat[[group_col]] <- paste0("group_", seq_len(nrow(dat)))
 }
-if (is.null(mag_col)) stop("Could not auto-detect a magnitude column. Use --magnitude_col.")
-if (is.null(coh_col)) stop("Could not auto-detect a coherence column. Use --coherence_col.")
+if (is.null(mag_col)) {
+  stop(
+    "Could not auto-detect a magnitude column. Available columns: ",
+    format_cols(names(dat)),
+    ". Accepted candidates, in priority order: ",
+    format_cols(mag_candidates),
+    ". Use --magnitude_col to specify one explicitly.",
+    call. = FALSE
+  )
+}
+if (is.null(coh_col)) {
+  stop(
+    "Could not auto-detect a coherence column. Available columns: ",
+    format_cols(names(dat)),
+    ". Accepted candidates, in priority order: ",
+    format_cols(coh_candidates),
+    ". Use --coherence_col to specify one explicitly.",
+    call. = FALSE
+  )
+}
 
 as_num <- function(x, name) {
   y <- suppressWarnings(as.numeric(x))

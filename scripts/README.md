@@ -1,6 +1,6 @@
 # Backend Scripts
 
-These scripts are the packaged compute layer for `microbiome-response-interpreter-v6`.
+These scripts are the packaged compute layer for `microbiome-response-interpreter-v6.5`.
 
 Within this skill package, `scripts/` is the packaged compute layer used by the skill.
 
@@ -9,6 +9,27 @@ For execution order and wrapper-facing use, start with [../SKILL.md](../SKILL.md
 ## Quick-start tutorial and example data
 
 For a five-minute workflow check, use `../tutorials/five-minute-toy-vignette.md` with the bundled artificial dataset in `../examples/toy_dataset/`.
+
+### Windows PowerShell / VS Code terminal toy smoke test
+
+PowerShell does not use Unix backslash line continuations; copy these one-line commands from the repository root:
+
+```powershell
+mkdir -Force outputs/toy
+Rscript scripts/check_inputs.R --feature_table examples/toy_dataset/feature_table.tsv --metadata examples/toy_dataset/metadata.tsv --pairing_map examples/toy_dataset/pairing_map.tsv --outdir outputs/toy
+Rscript scripts/paired_response_geometry.R --feature_table examples/toy_dataset/feature_table.tsv --metadata examples/toy_dataset/metadata.tsv --pairing_map examples/toy_dataset/pairing_map.tsv --outdir outputs/toy --pseudocount 0.5 --samples_in_rows true
+Rscript scripts/decision_flow_summary.R --group_geometry outputs/toy/group_geometry.tsv --outdir outputs/toy/decision_flow --endpoint_note "Toy before-after example"
+```
+
+Optional modules:
+
+```powershell
+Rscript scripts/pseudocount_sensitivity_check.R --feature_table examples/toy_dataset/feature_table.tsv --metadata examples/toy_dataset/metadata.tsv --pairing_map examples/toy_dataset/pairing_map.tsv --outdir outputs/toy/pseudocount --pseudocounts 0.5,1.0 --reference_pseudocount 0.5 --samples_in_rows true
+Rscript scripts/coherence_power_guide.R --outdir outputs/toy/power --sample_sizes 8,12 --effect_sizes 0,0.8 --n_features 50 --n_reps 20 --n_perm 99 --seed 123
+Rscript scripts/plot_summary.R --outdir outputs/toy
+```
+
+The toy feature table stores samples in rows. The explicit `--samples_in_rows true` flag avoids orientation auto-detection ambiguity in very small toy matrices.
 
 For input formatting rules, see `../references/input-data-structure.md`.
 
@@ -136,7 +157,7 @@ Generates lightweight summary PNGs from existing backend outputs.
 Example:
 
 ```bash
-Rscript skills/microbiome-response-interpreter-v6/scripts/plot_summary.R \
+Rscript scripts/plot_summary.R \
   --outdir output/paired_goldtrial
 ```
 

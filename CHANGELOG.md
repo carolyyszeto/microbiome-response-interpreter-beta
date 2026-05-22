@@ -1,5 +1,14 @@
 # Changelog
 
+## v6.5
+
+- Added PowerShell / VS Code one-line smoke-test commands.
+- Updated toy workflow documentation to use `--samples_in_rows true`.
+- Improved `decision_flow_summary.R` auto-detection for group-level output produced by `paired_response_geometry.R`, including `mean_subject_magnitude` and `mean_cosine`.
+- Added reader-facing "How to read the outputs" documentation.
+- Added conceptual references for compositional geometry, zero handling, directional statistics, trajectory analysis, PERMANOVA, and PERMDISP.
+- No change to core response-geometry calculations.
+
 ## 2026-05-20 beta upload polish
 
 - Fixed root README toy quick-start commands to match bundled script options and the five-minute tutorial.

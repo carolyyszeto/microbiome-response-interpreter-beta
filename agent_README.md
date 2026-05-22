@@ -78,14 +78,35 @@ Agents should report missing, inconsistent, duplicated, or incompatible fields r
 
 Before applying the workflow to new user data, run the bundled toy example from the repository root.
 
+Windows PowerShell / VS Code terminal users should use one-line commands because PowerShell does not use Unix backslash line continuations:
+
+```powershell
+mkdir -Force outputs/toy
+Rscript scripts/check_inputs.R --feature_table examples/toy_dataset/feature_table.tsv --metadata examples/toy_dataset/metadata.tsv --pairing_map examples/toy_dataset/pairing_map.tsv --outdir outputs/toy
+Rscript scripts/paired_response_geometry.R --feature_table examples/toy_dataset/feature_table.tsv --metadata examples/toy_dataset/metadata.tsv --pairing_map examples/toy_dataset/pairing_map.tsv --outdir outputs/toy --pseudocount 0.5 --samples_in_rows true
+Rscript scripts/decision_flow_summary.R --group_geometry outputs/toy/group_geometry.tsv --outdir outputs/toy/decision_flow --endpoint_note "Toy before-after example"
+```
+
+Optional modules:
+
+```powershell
+Rscript scripts/pseudocount_sensitivity_check.R --feature_table examples/toy_dataset/feature_table.tsv --metadata examples/toy_dataset/metadata.tsv --pairing_map examples/toy_dataset/pairing_map.tsv --outdir outputs/toy/pseudocount --pseudocounts 0.5,1.0 --reference_pseudocount 0.5 --samples_in_rows true
+Rscript scripts/coherence_power_guide.R --outdir outputs/toy/power --sample_sizes 8,12 --effect_sizes 0,0.8 --n_features 50 --n_reps 20 --n_perm 99 --seed 123
+Rscript scripts/plot_summary.R --outdir outputs/toy
+```
+
+The toy feature table stores samples in rows. The explicit `--samples_in_rows true` flag avoids orientation auto-detection ambiguity in very small toy matrices.
+
+Linux/macOS/WSL users may use shell continuations:
+
 ```bash
 mkdir -p outputs/toy
 
 Rscript scripts/check_inputs.R   --feature_table examples/toy_dataset/feature_table.tsv   --metadata examples/toy_dataset/metadata.tsv   --pairing_map examples/toy_dataset/pairing_map.tsv   --outdir outputs/toy
 
-Rscript scripts/paired_response_geometry.R   --feature_table examples/toy_dataset/feature_table.tsv   --metadata examples/toy_dataset/metadata.tsv   --pairing_map examples/toy_dataset/pairing_map.tsv   --outdir outputs/toy   --pseudocount 0.5
+Rscript scripts/paired_response_geometry.R   --feature_table examples/toy_dataset/feature_table.tsv   --metadata examples/toy_dataset/metadata.tsv   --pairing_map examples/toy_dataset/pairing_map.tsv   --outdir outputs/toy   --pseudocount 0.5   --samples_in_rows true
 
-Rscript scripts/decision_flow_summary.R   --group_geometry outputs/toy/group_geometry.tsv   --outdir outputs/toy/decision_flow   --endpoint_note "Toy before-after endpoint"
+Rscript scripts/decision_flow_summary.R   --group_geometry outputs/toy/group_geometry.tsv   --outdir outputs/toy/decision_flow   --endpoint_note "Toy before-after example"
 ```
 
 Expected core outputs include:

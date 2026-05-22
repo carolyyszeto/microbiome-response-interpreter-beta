@@ -9,7 +9,7 @@ usage <- function() {
   cat(
     paste(
       "Usage:",
-      "  Rscript skills/microbiome-response-interpreter-v6/scripts/compute_clr_aitchison.R",
+      "  Rscript skills/microbiome-response-interpreter-v6.5/scripts/compute_clr_aitchison.R",
       "    --counts PATH | --feature_table PATH",
       "    --outdir PATH",
       "    [--input-format auto|matrix|long]",

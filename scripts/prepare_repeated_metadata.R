@@ -9,7 +9,7 @@ usage <- function() {
   cat(
     paste(
       "Usage:",
-      "  Rscript skills/microbiome-response-interpreter-v6/scripts/prepare_repeated_metadata.R",
+      "  Rscript skills/microbiome-response-interpreter-v6.5/scripts/prepare_repeated_metadata.R",
       "    --metadata PATH",
       "    --outdir PATH",
       "    [--output-metadata PATH]",

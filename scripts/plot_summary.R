@@ -14,7 +14,7 @@ usage <- function() {
   cat(
     paste(
       "Usage:",
-      "  Rscript skills/microbiome-response-interpreter-v6/scripts/plot_summary.R",
+      "  Rscript skills/microbiome-response-interpreter-v6.5/scripts/plot_summary.R",
       "    --outdir PATH | --run_dir PATH",
       sep = "\n"
     ),

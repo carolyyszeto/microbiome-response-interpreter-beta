@@ -9,7 +9,7 @@ usage <- function() {
   cat(
     paste(
       "Usage:",
-      "  Rscript skills/microbiome-response-interpreter-v6/scripts/paired_response_geometry.R",
+      "  Rscript skills/microbiome-response-interpreter-v6.5/scripts/paired_response_geometry.R",
       "    --metadata PATH",
       "    --outdir PATH",
       "    [--counts PATH | --feature_table PATH | --clr PATH | --distance PATH]",

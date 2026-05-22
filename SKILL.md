@@ -1,5 +1,5 @@
 ---
-name: microbiome-response-interpreter-v6
+name: microbiome-response-interpreter-v6-5
 description: use when the user has practical microbiome taxonomy or abundance tables plus metadata, including standardized geometry-ready dataset bundles, and needs conservative data-readiness routing, backend execution, targeted pseudocount sensitivity checks, simulation-based sample-size operating guidance, reader-friendly decision-flow summaries, release-readiness tutorials, toy datasets, input-schema guidance, environment templates, and restrained response-geometry summaries. this skill is a microbiome-first practical v6 support package. it is not the manuscript computation engine, not a validated software product, not a predictive or clinical tool, and not a finished cross-platform or multi-domain framework.
 ---
 
@@ -14,12 +14,13 @@ This skill is an orchestration-and-interpretation layer over a computational cor
 
 ## Release State
 
-- Current packaged identity: `microbiome-response-interpreter-v6`
+- Current packaged identity: `microbiome-response-interpreter-v6.5`
 - Purpose of v6: direct backend execution on standardized geometry-ready dataset bundles, with `--pairing_map`, `--feature_table`, and `--run_dir` support plus V10 David/Palleja implementation stress-test and Palleja pathway-geometry documentation.
 - V6.1 add-on: targeted pseudocount sensitivity checks and simulation-based sample-size operating guidance for directional coherence. See [references/changelog-v6-1.md](references/changelog-v6-1.md).
 - V6.2 add-on: reader-friendly decision-flow summaries for magnitude/coherence interpretation and biological follow-up planning. See [references/changelog-v6-2.md](references/changelog-v6-2.md).
 - V6.3 add-on: release-readiness support with a five-minute toy vignette, toy dataset, input data-structure guide, and Conda/Docker environment templates. See [references/changelog-v6-3.md](references/changelog-v6-3.md).
 - V6.4 QA patch: public release-surface materials, aligned dependency files, root README, MIT license, citation metadata, known limitations, and stale command cleanup. See [CHANGELOG.md](CHANGELOG.md).
+- V6.5 usability patch: PowerShell / VS Code one-line smoke-test commands, explicit toy `--samples_in_rows true`, and decision-flow auto-detection for `paired_response_geometry.R` group outputs. See [CHANGELOG.md](CHANGELOG.md) and [references/changelog-v6-5.md](references/changelog-v6-5.md).
 - For legacy naming transition details, see [references/changelog-v3.md](references/changelog-v3.md)
 - For v5.2 release details, see [references/changelog-v5-2.md](references/changelog-v5-2.md)
 - For v6 release details, see [references/changelog-v6.md](references/changelog-v6.md)
@@ -303,6 +304,7 @@ For most tasks:
 - Version note: [references/changelog-v3.md](references/changelog-v3.md)
 - V5.2 release note: [references/changelog-v5-2.md](references/changelog-v5-2.md)
 - V6 release note: [references/changelog-v6.md](references/changelog-v6.md)
+- V6.5 release note: [references/changelog-v6-5.md](references/changelog-v6-5.md)
 
 ## Packaging Note
 

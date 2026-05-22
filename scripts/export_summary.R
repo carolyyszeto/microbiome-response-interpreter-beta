@@ -9,7 +9,7 @@ usage <- function() {
   cat(
     paste(
       "Usage:",
-      "  Rscript skills/microbiome-response-interpreter-v6/scripts/export_summary.R",
+      "  Rscript skills/microbiome-response-interpreter-v6.5/scripts/export_summary.R",
       "    --outdir PATH | --run_dir PATH",
       "    [--check-inputs-summary PATH]",
       "    [--workflow-summary PATH]",
