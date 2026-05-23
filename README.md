@@ -208,7 +208,9 @@ Use this workflow to describe response organization within a specified feature s
 
 ## Citation
 
-If using this repository before journal publication, cite the accompanying preprint and the archived software release if available. After publication, update the citation to the journal article and the final archived release. A draft citation metadata file is provided in `CITATION.cff`.
+If using this repository before journal publication, cite the accompanying preprint and the archived software release if available.Preprint:
+Szeto CYY, Kwan HS. A response-geometry framework separates microbiome movement magnitude from directional coherence in intervention studies. bioRxiv. 2026. https://doi.org/10.64898/2026.05.22.726133
+After publication, update the citation to the journal article and the final archived release. A draft citation metadata file is provided in `CITATION.cff`.
 
 ## License
 
