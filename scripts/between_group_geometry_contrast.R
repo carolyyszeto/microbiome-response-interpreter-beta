@@ -1,4 +1,10 @@
 source(file.path(dirname(normalizePath(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value=TRUE)[1]), mustWork=FALSE)), "backend_common.R"))
-opts <- parse_cli_args(); require_args(opts,c("vectors","outdir")); v<-readr::read_tsv(opts$vectors,show_col_types=FALSE); cols<-grep("^v",names(v),value=TRUE); if(!all(c("group",cols)%in%names(v)))stop("vectors need group and v1, v2, ...",call.=FALSE)
-g<-split(v,v$group); if(length(g)!=2)stop("exactly two groups required",call.=FALSE); m<-lapply(g,function(x)colMeans(as.matrix(x[,cols]))); contrast<-cosine_similarity(m[[1]],m[[2]])
-write_tsv_safe(tibble(group_a=names(g)[1],group_b=names(g)[2],mean_direction_cosine=contrast,interpretation="descriptive between-group directional contrast; not a responder classification"),file.path(ensure_outdir(opts$outdir),"between_group_geometry_contrast.tsv"))
+opts <- parse_cli_args(); require_args(opts,c("vectors","outdir")); set.seed(as.integer(opts$seed %||% 1)); B <- as.integer(opts$permutations %||% 999)
+v <- readr::read_tsv(opts$vectors,show_col_types=FALSE); cols <- grep("^v[0-9]+$",names(v),value=TRUE); if(!all(c("group",cols)%in%names(v))) stop("vectors need group and v1, v2, ...",call.=FALSE)
+lev <- unique(as.character(v$group)); if(length(lev)!=2) stop("exactly two groups required",call.=FALSE)
+stats_for <- function(g) { a <- as.matrix(v[g==lev[1],cols]); b <- as.matrix(v[g==lev[2],cols]); c(mean(sqrt(rowSums(a^2)))-mean(sqrt(rowSums(b^2))), mean(compute_loo_cosines(a),na.rm=TRUE)-mean(compute_loo_cosines(b),na.rm=TRUE), cosine_similarity(colMeans(a),colMeans(b))) }
+obs <- stats_for(as.character(v$group)); null <- t(replicate(B, stats_for(sample(as.character(v$group)))))
+p <- (1+colSums(abs(null[,1:2,drop=FALSE]) >= abs(obs[1:2])))/(B+1)
+jack <- bind_rows(lapply(seq_len(nrow(v)), function(i) { x<-v[-i,,drop=FALSE]; old<-v; v<<-x; z<-stats_for(as.character(v$group)); v<<-old; tibble(deleted_subject_id=old$subject_id[i], magnitude_contrast=z[1], loo_coherence_contrast=z[2], mean_direction_cosine=z[3]) }))
+out <- tibble(group_a=lev[1],group_b=lev[2],magnitude_contrast=obs[1],loo_coherence_contrast=obs[2],mean_direction_cosine=obs[3],magnitude_permutation_p_two_sided=p[1],loo_coherence_permutation_p_two_sided=p[2],permutations=B,seed=as.integer(opts$seed%||%1),interpretation="descriptive arm contrast with arm-label permutation and participant-deletion jackknife; not responder classification")
+od <- ensure_outdir(opts$outdir); write_tsv_safe(out,file.path(od,"between_group_geometry_contrast.tsv")); write_tsv_safe(jack,file.path(od,"between_group_geometry_contrast_jackknife.tsv"))

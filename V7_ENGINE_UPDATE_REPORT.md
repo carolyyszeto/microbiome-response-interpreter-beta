@@ -10,7 +10,7 @@ Paired directional organization now uses a leave-one-participant-out reference: 
 
 - Paired artificial-toy smoke test passed (8 pairs, two groups) with LOO output and separately labelled legacy output.
 - Pseudocount sensitivity smoke test passed using the LOO estimator.
-- Three-timepoint return toy passed: all constructed trajectories had `q=1` and `rho=0.5`.
+- Three-timepoint return toy now uses separate A, R, and E vectors with hand-checkable non-symmetric values (T01: `q=0.894427191`, `rho=0.632455532`).
 - Simulator passed all five scenarios, including an NA LOO result for zero vectors.
 - Deterministic LOO exclusion, sign-flip seed reproducibility, group separation, and participant-deletion diagnostics passed their smoke runs; sign flipping multiplies vectors by +/-1 and records magnitude preservation.
 

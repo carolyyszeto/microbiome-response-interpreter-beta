@@ -1,6 +1,6 @@
 source(file.path(dirname(normalizePath(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value=TRUE)[1]), mustWork=FALSE)), "backend_common.R"))
 opts <- parse_cli_args(); require_args(opts, c("vectors", "outdir")); set.seed(as.integer(opts$seed %||% 1)); B <- as.integer(opts$permutations %||% 999)
-v <- readr::read_tsv(opts$vectors, show_col_types=FALSE); cols <- grep("^v", names(v), value=TRUE); if(!length(cols)) stop("vectors must contain v1, v2, ... columns", call.=FALSE)
-mat <- as.matrix(v[,cols]); observed <- mean(compute_loo_cosines(mat), na.rm=TRUE)
-null <- replicate(B, mean(compute_loo_cosines(mat * sample(c(-1,1), nrow(mat), TRUE)), na.rm=TRUE))
-write_tsv_safe(tibble(observed_loo_cosine=observed, null_mean=mean(null), p_two_sided=(1+sum(abs(null)>=abs(observed)))/(B+1), permutations=B, seed=as.integer(opts$seed %||% 1), magnitude_preserved=TRUE, null_description="paired sign-flip diagnostic null; pairing and vector magnitude are preserved"), file.path(ensure_outdir(opts$outdir), "paired_signflip_null.tsv"))
+v <- readr::read_tsv(opts$vectors, show_col_types=FALSE); cols <- grep("^v[0-9]+$", names(v), value=TRUE); if(!length(cols)) stop("vectors must contain v1, v2, ... columns", call.=FALSE)
+v$.group <- if ("group" %in% names(v)) as.character(v$group) else "all_participants"
+out <- bind_rows(lapply(split(v, v$.group), function(x) { M <- as.matrix(x[,cols]); observed <- mean(compute_loo_cosines(M), na.rm=TRUE); null <- replicate(B, mean(compute_loo_cosines(M * sample(c(-1,1), nrow(M), TRUE)), na.rm=TRUE)); tibble(group=x$.group[1], n_subjects=nrow(x), observed_loo_cosine=observed, null_mean=mean(null), p_two_sided=(1+sum(abs(null)>=abs(observed)))/(B+1), permutations=B, seed=as.integer(opts$seed %||% 1), magnitude_preserved=TRUE, null_description="paired sign-flip diagnostic null; pairing and vector magnitude are preserved") }))
+write_tsv_safe(out, file.path(ensure_outdir(opts$outdir), "paired_signflip_null.tsv"))
