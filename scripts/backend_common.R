@@ -718,6 +718,19 @@ geometry_directional_summary <- function(vec_df) {
   }) %>% ungroup()
 }
 
+response_dimension_columns <- function(df) {
+  reserved <- c("subject_id", "group", "magnitude", "loo_reference_cosine",
+    "legacy_full_sample_mean_cosine", "legacy_full_sample_cosine")
+  cols <- setdiff(names(df), reserved)
+  cols[vapply(df[cols], is.numeric, logical(1))]
+}
+
+standardize_response_vectors <- function(vec_df, feature_names) {
+  mat <- do.call(rbind, vec_df$vector)
+  colnames(mat) <- feature_names
+  bind_cols(tibble(subject_id = vec_df$subject_id, group = vec_df$group), as_tibble(mat))
+}
+
 compute_subject_vectors <- function(clr_mat, pairs_df) {
   vectors <- lapply(seq_len(nrow(pairs_df)), function(i) {
     b <- pairs_df$Before[i]

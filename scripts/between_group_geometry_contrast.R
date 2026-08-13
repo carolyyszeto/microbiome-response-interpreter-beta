@@ -1,6 +1,6 @@
 source(file.path(dirname(normalizePath(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value=TRUE)[1]), mustWork=FALSE)), "backend_common.R"))
 opts <- parse_cli_args(); require_args(opts,c("vectors","outdir")); set.seed(as.integer(opts$seed %||% 1)); B <- as.integer(opts$permutations %||% 999)
-v <- readr::read_tsv(opts$vectors,show_col_types=FALSE); cols <- grep("^v[0-9]+$",names(v),value=TRUE); if(!all(c("group",cols)%in%names(v))) stop("vectors need group and v1, v2, ...",call.=FALSE)
+v <- readr::read_tsv(opts$vectors,show_col_types=FALSE); cols <- response_dimension_columns(v); if(!("group" %in% names(v)) || !length(cols)) stop("vectors need group and numeric response dimensions",call.=FALSE)
 lev <- unique(as.character(v$group)); if(length(lev)!=2) stop("exactly two groups required",call.=FALSE)
 stats_for <- function(g) { a <- as.matrix(v[g==lev[1],cols]); b <- as.matrix(v[g==lev[2],cols]); c(mean(sqrt(rowSums(a^2)))-mean(sqrt(rowSums(b^2))), mean(compute_loo_cosines(a),na.rm=TRUE)-mean(compute_loo_cosines(b),na.rm=TRUE), cosine_similarity(colMeans(a),colMeans(b))) }
 obs <- stats_for(as.character(v$group)); null <- t(replicate(B, stats_for(sample(as.character(v$group)))))

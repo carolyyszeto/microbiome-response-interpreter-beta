@@ -41,7 +41,7 @@ read_clr_tsv <- function(path) {
 build_geometry_from_clr <- function(clr_mat, pairs) {
   vec_df <- compute_subject_vectors(clr_mat, pairs)
   if (nrow(vec_df) == 0) {
-    return(list(vectors = tibble(), summary = tibble(), coords = tibble()))
+    return(list(vectors = tibble(), participant_vectors = tibble(), summary = tibble(), coords = tibble()))
   }
 
   vec_tbl <- geometry_directional_summary(vec_df)
@@ -64,7 +64,7 @@ build_geometry_from_clr <- function(clr_mat, pairs) {
   dist_obj <- aitchison_dist_from_clr(clr_mat)
   coords <- cmdscale_tibble(dist_obj, k = 2)
 
-  list(vectors = vec_tbl, summary = group_tbl, coords = coords)
+  list(vectors = vec_tbl, participant_vectors = standardize_response_vectors(vec_df, colnames(clr_mat)), summary = group_tbl, coords = coords)
 }
 
 build_geometry_from_distance <- function(dist_obj, metadata_prepared) {
@@ -80,7 +80,7 @@ build_geometry_from_distance <- function(dist_obj, metadata_prepared) {
     pivot_wider(names_from = phase_std, values_from = c(PC1, PC2), names_sep = "_")
 
   if (nrow(wide) == 0) {
-    return(list(vectors = tibble(), summary = tibble(), coords = coords))
+    return(list(vectors = tibble(), participant_vectors = tibble(), summary = tibble(), coords = coords))
   }
 
   vec_tbl <- wide %>%
@@ -116,7 +116,8 @@ build_geometry_from_distance <- function(dist_obj, metadata_prepared) {
       .groups = "drop"
     )
 
-  list(vectors = vec_tbl, summary = group_tbl, coords = coords)
+  participant_vectors <- wide %>% transmute(subject_id, group, PC1 = PC1_After - PC1_Before, PC2 = PC2_After - PC2_Before)
+  list(vectors = vec_tbl, participant_vectors = participant_vectors, summary = group_tbl, coords = coords)
 }
 
 main <- function() {
@@ -183,6 +184,7 @@ main <- function() {
   }
 
   write_tsv_safe(geometry$vectors, file.path(outdir, "paired_vectors.tsv"))
+  write_tsv_safe(geometry$participant_vectors, file.path(outdir, "participant_response_vectors.tsv"))
   write_tsv_safe(geometry$summary, file.path(outdir, "group_geometry.tsv"))
   write_tsv_safe(geometry$coords, file.path(outdir, "sample_geometry_coords.tsv"))
   write_tsv_safe(pairs, file.path(outdir, "pair_mapping.tsv"))
