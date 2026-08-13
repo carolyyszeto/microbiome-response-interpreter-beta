@@ -44,17 +44,7 @@ build_geometry_from_clr <- function(clr_mat, pairs) {
     return(list(vectors = tibble(), summary = tibble(), coords = tibble()))
   }
 
-  vec_tbl <- vec_df %>%
-    group_by(group) %>%
-    group_modify(~{
-      vmat <- do.call(rbind, .x$vector)
-      tibble(
-        subject_id = .x$subject_id,
-        magnitude = sqrt(rowSums(vmat * vmat)),
-        mean_cosine = compute_group_cosines(vmat)
-      )
-    }) %>%
-    ungroup()
+  vec_tbl <- geometry_directional_summary(vec_df)
 
   group_tbl <- vec_df %>%
     group_by(group) %>%
@@ -65,7 +55,8 @@ build_geometry_from_clr <- function(clr_mat, pairs) {
         n_subjects = nrow(vmat),
         mean_vector_magnitude = sqrt(sum(mu * mu)),
         mean_subject_magnitude = mean(sqrt(rowSums(vmat * vmat))),
-        mean_cosine = mean(compute_group_cosines(vmat), na.rm = TRUE)
+        mean_loo_reference_cosine = mean(compute_loo_cosines(vmat), na.rm = TRUE),
+        mean_legacy_full_sample_cosine = mean(compute_group_cosines(vmat), na.rm = TRUE)
       )
     }) %>%
     ungroup()
@@ -107,8 +98,12 @@ build_geometry_from_distance <- function(dist_obj, metadata_prepared) {
 
   vec_tbl <- vec_tbl %>%
     left_join(group_dir, by = "group") %>%
-    mutate(mean_cosine = (dx * mx + dy * my) / (sqrt(dx^2 + dy^2) * sqrt(mx^2 + my^2))) %>%
-    select(subject_id, group, magnitude, mean_cosine)
+    group_by(group) %>% group_modify(~{
+      v <- as.matrix(.x[, c("dx", "dy")]);
+      tibble(subject_id = .x$subject_id, group = .x$group, magnitude = .x$magnitude,
+        loo_reference_cosine = compute_loo_cosines(v),
+        legacy_full_sample_mean_cosine = compute_group_cosines(v))
+    }) %>% ungroup()
 
   group_tbl <- vec_tbl %>%
     group_by(group) %>%
@@ -116,7 +111,8 @@ build_geometry_from_distance <- function(dist_obj, metadata_prepared) {
       n_subjects = n(),
       mean_vector_magnitude = mean(magnitude, na.rm = TRUE),
       mean_subject_magnitude = mean(magnitude, na.rm = TRUE),
-      mean_cosine = mean(mean_cosine, na.rm = TRUE),
+      mean_loo_reference_cosine = mean(loo_reference_cosine, na.rm = TRUE),
+      mean_legacy_full_sample_cosine = mean(legacy_full_sample_mean_cosine, na.rm = TRUE),
       .groups = "drop"
     )
 

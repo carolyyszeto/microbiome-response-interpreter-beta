@@ -697,6 +697,27 @@ compute_group_cosines <- function(vmat) {
   vapply(seq_len(nrow(vmat)), function(i) cosine_similarity(vmat[i, ], mu), numeric(1))
 }
 
+# Participant-excluded directional reference.  This is deliberately separate
+# from compute_group_cosines(), which remains the legacy full-sample metric.
+compute_loo_cosines <- function(vmat) {
+  if (is.null(dim(vmat))) vmat <- matrix(vmat, nrow = 1)
+  n <- nrow(vmat)
+  vapply(seq_len(n), function(i) {
+    if (n < 2) return(NA_real_)
+    cosine_similarity(vmat[i, ], colMeans(vmat[-i, , drop = FALSE]))
+  }, numeric(1))
+}
+
+geometry_directional_summary <- function(vec_df) {
+  vec_df %>% group_by(group) %>% group_modify(~{
+    vmat <- do.call(rbind, .x$vector)
+    mag <- sqrt(rowSums(vmat * vmat))
+    tibble(subject_id = .x$subject_id, magnitude = mag,
+      loo_reference_cosine = compute_loo_cosines(vmat),
+      legacy_full_sample_mean_cosine = compute_group_cosines(vmat))
+  }) %>% ungroup()
+}
+
 compute_subject_vectors <- function(clr_mat, pairs_df) {
   vectors <- lapply(seq_len(nrow(pairs_df)), function(i) {
     b <- pairs_df$Before[i]

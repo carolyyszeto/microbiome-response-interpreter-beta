@@ -42,17 +42,7 @@ compute_geometry_for_pseudocount <- function(counts, pairs, pseudocount) {
   vec_df <- compute_subject_vectors(clr_mat, pairs)
   if (nrow(vec_df) == 0) stop("No paired vectors could be computed after aligning samples.", call. = FALSE)
 
-  subject_tbl <- vec_df %>%
-    group_by(group) %>%
-    group_modify(~{
-      vmat <- do.call(rbind, .x$vector)
-      tibble(
-        subject_id = .x$subject_id,
-        magnitude = sqrt(rowSums(vmat * vmat)),
-        mean_cosine = compute_group_cosines(vmat)
-      )
-    }) %>%
-    ungroup() %>%
+  subject_tbl <- geometry_directional_summary(vec_df) %>%
     mutate(pseudocount = pseudocount, .before = 1)
 
   group_tbl <- vec_df %>%
@@ -65,8 +55,9 @@ compute_geometry_for_pseudocount <- function(counts, pairs, pseudocount) {
         mean_vector_magnitude = sqrt(sum(mu * mu)),
         mean_subject_magnitude = mean(sqrt(rowSums(vmat * vmat))),
         median_subject_magnitude = stats::median(sqrt(rowSums(vmat * vmat))),
-        mean_cosine = mean(compute_group_cosines(vmat), na.rm = TRUE),
-        median_cosine = stats::median(compute_group_cosines(vmat), na.rm = TRUE)
+        mean_loo_reference_cosine = mean(compute_loo_cosines(vmat), na.rm = TRUE),
+        median_loo_reference_cosine = stats::median(compute_loo_cosines(vmat), na.rm = TRUE),
+        mean_legacy_full_sample_cosine = mean(compute_group_cosines(vmat), na.rm = TRUE)
       )
     }) %>%
     ungroup() %>%
@@ -123,20 +114,18 @@ main <- function() {
 
   ref_tbl <- group_tbl %>%
     filter(abs(pseudocount - reference_pc) < .Machine$double.eps^0.5) %>%
-    select(group, ref_mean_subject_magnitude = mean_subject_magnitude, ref_mean_cosine = mean_cosine)
+    select(group, ref_mean_subject_magnitude = mean_subject_magnitude, ref_mean_loo_reference_cosine = mean_loo_reference_cosine)
 
   compare_tbl <- group_tbl %>%
     left_join(ref_tbl, by = "group") %>%
     mutate(
       reference_pseudocount = reference_pc,
       delta_mean_subject_magnitude = mean_subject_magnitude - ref_mean_subject_magnitude,
-      delta_mean_cosine = mean_cosine - ref_mean_cosine,
+      delta_mean_loo_reference_cosine = mean_loo_reference_cosine - ref_mean_loo_reference_cosine,
       relative_delta_magnitude = delta_mean_subject_magnitude / ifelse(abs(ref_mean_subject_magnitude) < 1e-12, NA_real_, ref_mean_subject_magnitude),
       qualitative_note = case_when(
-        is.na(delta_mean_cosine) ~ "not_evaluable",
-        abs(delta_mean_cosine) < 0.05 ~ "small_cosine_shift",
-        abs(delta_mean_cosine) < 0.15 ~ "moderate_cosine_shift_review_needed",
-        TRUE ~ "large_cosine_shift_review_needed"
+        is.na(delta_mean_loo_reference_cosine) ~ "not_evaluable",
+        TRUE ~ "descriptive_comparison_no_validated_cutoff"
       )
     )
 

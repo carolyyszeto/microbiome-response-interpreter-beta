@@ -1,0 +1,4 @@
+source(file.path(dirname(normalizePath(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value=TRUE)[1]), mustWork=FALSE)), "backend_common.R"))
+opts <- parse_cli_args(); require_args(opts,c("vectors","outdir")); v<-readr::read_tsv(opts$vectors,show_col_types=FALSE); cols<-grep("^v",names(v),value=TRUE); if(!all(c("group",cols)%in%names(v)))stop("vectors need group and v1, v2, ...",call.=FALSE)
+g<-split(v,v$group); if(length(g)!=2)stop("exactly two groups required",call.=FALSE); m<-lapply(g,function(x)colMeans(as.matrix(x[,cols]))); contrast<-cosine_similarity(m[[1]],m[[2]])
+write_tsv_safe(tibble(group_a=names(g)[1],group_b=names(g)[2],mean_direction_cosine=contrast,interpretation="descriptive between-group directional contrast; not a responder classification"),file.path(ensure_outdir(opts$outdir),"between_group_geometry_contrast.tsv"))
